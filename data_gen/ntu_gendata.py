@@ -1,4 +1,5 @@
 import sys
+
 sys.path.extend(['../'])
 
 import pickle
@@ -7,7 +8,6 @@ import argparse
 from tqdm import tqdm
 
 from data_gen.preprocess import pre_normalization
-
 
 # https://arxiv.org/pdf/1604.02808.pdf, Section 3.2
 training_subjects = [
@@ -111,6 +111,13 @@ def gendata(data_path, out_path, ignored_sample_path=None, benchmark='xview', pa
         action_class = int(filename[filename.find('A') + 1:filename.find('A') + 4])
         subject_id = int(filename[filename.find('P') + 1:filename.find('P') + 4])
         camera_id = int(filename[filename.find('C') + 1:filename.find('C') + 4])
+        total_action_classes = 60
+        ratio = 0.1
+        start = int((subject_id * total_action_classes * ratio)) % total_action_classes
+        end = int((subject_id * total_action_classes * ratio)) % total_action_classes + int(
+            total_action_classes * ratio)
+        if action_class not in range(start, end):
+            continue
 
         if benchmark == 'xview':
             istraining = (camera_id in training_cameras)
